@@ -1,0 +1,11 @@
+//
+//  ProtocolErrorEvent.swift
+//  FrameWork-V2
+//
+//  Created by eand ePayment on 09/11/24.
+//
+
+struct ProtocolErrorEvent {
+    let errorCode: String          // Example field
+    let errorMessage: String       // Example field
+}
