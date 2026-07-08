@@ -20,8 +20,12 @@ class TextFieldFormatter: UITextField {
         }
     }
     
-    var formattedText: String {
-        return text ?? ""
+    /// Set text directly without running the format pattern.
+    /// Use this when you want to display a pre-formatted or masked string (e.g. "424242******4242")
+    /// that should not be processed by the TextFieldFormatter pattern engine.
+    func setRawText(_ rawText: String) {
+        super.text = rawText
+        oldText    = rawText
     }
     
     var unformattedText: String {

@@ -7,7 +7,7 @@
 
 import Foundation
 import UIKit
-import FrameWork_V2
+
 //MARK: - UITextFieldDelegate Initialization & Card Entry Validation
 
 
@@ -38,25 +38,30 @@ extension AddCardVC: UITextFieldDelegate {
             }
             self.cardNoValidateStatusLbl.isHidden = true
             self.checkCardType()
-            if checkValidationOnCardChange(textField: self.cardNoTF) {
-                self.addCardViewModel.validateCardData(cardNumber: self.cardNoTF.text ?? "") { response in
-                    print(">>>>>>>>>>>>>>>>>>>>>>>>", response)
-                    
-                    guard let response = response else {
-                        EPGHelper.showAlert(controller: self, message: EPGConstant.shared.authentication_failed) { isComplete in
-                            if isComplete { self.dismiss(animated: true) }
+            // Recurrence flow — skip card validation API call entirely.
+            // Card number field is hidden; server already has the saved card on file.
+            if !self.isRecurrencePayment {
+                if checkValidationOnCardChange(textField: self.cardNoTF) {
+                    self.addCardViewModel.validateCardData(cardNumber: self.cardNoTF.text ?? "") { response in
+                        let responseDescription = String(describing: response)
+                        EPGLogger.debug("Response of validateCardData === \(responseDescription)")
+                        
+                        guard let response = response else {
+                            EPGHelper.showAlert(controller: self, message: EPGConstant.shared.authentication_failed) { isComplete in
+                                if isComplete { self.dismiss(animated: true) }
+                            }
+                            return
                         }
-                        return
-                    }
-                    self.isSDKEnabled = response.transaction?.isSDKEnabled ?? false
-                    // Check if the SDK is enabled (isSDKEnabled is true) based on the response
-                   
-                    
-                    // Proceed with other response checks
-                    if response.transaction?.responseCode == "0" {
-                        self.ConfirmButtonVisibilityUpdate(isButtonVisible: true)
-                    } else {
-                        self.ConfirmButtonVisibilityUpdate(isButtonVisible: false)
+                        self.isSDKEnabled = response.transaction?.isSDKEnabled ?? false
+                        // Check if the SDK is enabled (isSDKEnabled is true) based on the response
+                       
+                        
+                        // Proceed with other response checks
+                        if response.transaction?.responseCode == "0" {
+                            self.ConfirmButtonVisibilityUpdate(isButtonVisible: true)
+                        } else {
+                            self.ConfirmButtonVisibilityUpdate(isButtonVisible: false)
+                        }
                     }
                 }
             }

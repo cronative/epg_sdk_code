@@ -3,12 +3,16 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 54;
+	objectVersion = 70;
 	objects = {
 
 /* Begin PBXBuildFile section */
-		0154FC342CE3CB19001267AA /* FrameWork_V2.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0154FC312CE3CB0B001267AA /* FrameWork_V2.framework */; };
-		0154FC352CE3CB19001267AA /* FrameWork_V2.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 0154FC312CE3CB0B001267AA /* FrameWork_V2.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		EC89597A2FF4E45B000D6BCF /* NewAddCardVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC8959792FF4E45B000D6BCF /* NewAddCardVC.swift */; };
+		EC8959C42FF66FC7000D6BCF /* FloatingLabelField.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC8959C32FF66FC7000D6BCF /* FloatingLabelField.swift */; };
+		ECC5BE452FEEC0C300285F85 /* InitializeActivity.swift in Sources */ = {isa = PBXBuildFile; fileRef = ECC5BE0F2FEEC0C300285F85 /* InitializeActivity.swift */; };
+		ECC5BE512FEEC1E300285F85 /* SwiftyRSA in Frameworks */ = {isa = PBXBuildFile; productRef = ECC5BE502FEEC1E300285F85 /* SwiftyRSA */; };
+		ECD659BF2FF24C5F00A572A2 /* EPGLogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = ECD659BE2FF24C5C00A572A2 /* EPGLogger.swift */; };
+		ECD659DB2FF27F7300A572A2 /* FrameworkInitializer.swift in Sources */ = {isa = PBXBuildFile; fileRef = ECD659DA2FF27F7300A572A2 /* FrameworkInitializer.swift */; };
 		F50DEFE22907DDDA00CBA008 /* BottomPopupUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = F50DEFDA2907DDDA00CBA008 /* BottomPopupUtils.swift */; };
 		F50DEFE32907DDDA00CBA008 /* BottomPopupViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F50DEFDB2907DDDA00CBA008 /* BottomPopupViewController.swift */; };
 		F50DEFE42907DDDA00CBA008 /* BottomPopupDismissInteractionController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F50DEFDC2907DDDA00CBA008 /* BottomPopupDismissInteractionController.swift */; };
@@ -128,39 +132,12 @@
 		F5F8DEC128FD78CE00569961 /* UIColor+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5F8DEC028FD78CE00569961 /* UIColor+Extension.swift */; };
 /* End PBXBuildFile section */
 
-/* Begin PBXContainerItemProxy section */
-		0154FC302CE3CB0B001267AA /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 0154FC2B2CE3CB0B001267AA /* EMVco.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 01349AFB2CC2BA09006C0972;
-			remoteInfo = "FrameWork-V2";
-		};
-		0154FC322CE3CB0B001267AA /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 0154FC2B2CE3CB0B001267AA /* EMVco.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 01349B052CC2BA09006C0972;
-			remoteInfo = "FrameWork-V2Tests";
-		};
-/* End PBXContainerItemProxy section */
-
-/* Begin PBXCopyFilesBuildPhase section */
-		0154FB8F2CE3C964001267AA /* Embed Frameworks */ = {
-			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
-			dstPath = "";
-			dstSubfolderSpec = 10;
-			files = (
-				0154FC352CE3CB19001267AA /* FrameWork_V2.framework in Embed Frameworks */,
-			);
-			name = "Embed Frameworks";
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-/* End PBXCopyFilesBuildPhase section */
-
 /* Begin PBXFileReference section */
-		0154FC2B2CE3CB0B001267AA /* EMVco.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = EMVco.xcodeproj; path = "../../Desktop/EMVco copy/EMVco.xcodeproj"; sourceTree = "<group>"; };
+		EC8959792FF4E45B000D6BCF /* NewAddCardVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewAddCardVC.swift; sourceTree = "<group>"; };
+		EC8959C32FF66FC7000D6BCF /* FloatingLabelField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FloatingLabelField.swift; sourceTree = "<group>"; };
+		ECC5BE0F2FEEC0C300285F85 /* InitializeActivity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InitializeActivity.swift; sourceTree = "<group>"; };
+		ECD659BE2FF24C5C00A572A2 /* EPGLogger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EPGLogger.swift; sourceTree = "<group>"; };
+		ECD659DA2FF27F7300A572A2 /* FrameworkInitializer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FrameworkInitializer.swift; sourceTree = "<group>"; };
 		F50DEFDA2907DDDA00CBA008 /* BottomPopupUtils.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BottomPopupUtils.swift; sourceTree = "<group>"; };
 		F50DEFDB2907DDDA00CBA008 /* BottomPopupViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BottomPopupViewController.swift; sourceTree = "<group>"; };
 		F50DEFDC2907DDDA00CBA008 /* BottomPopupDismissInteractionController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BottomPopupDismissInteractionController.swift; sourceTree = "<group>"; };
@@ -281,28 +258,25 @@
 		F5F8DEC028FD78CE00569961 /* UIColor+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIColor+Extension.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedRootGroup section */
+		ECC5BE192FEEC0C300285F85 /* Interface */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = Interface; sourceTree = "<group>"; };
+		ECC5BE232FEEC0C300285F85 /* Models */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = Models; sourceTree = "<group>"; };
+		ECC5BE2D2FEEC0C300285F85 /* Utilities  */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = "Utilities "; sourceTree = "<group>"; };
+/* End PBXFileSystemSynchronizedRootGroup section */
+
 /* Begin PBXFrameworksBuildPhase section */
 		F518090428ACB3B400D4219C /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 				F518091328ACB3C000D4219C /* UIKit.framework in Frameworks */,
-				0154FC342CE3CB19001267AA /* FrameWork_V2.framework in Frameworks */,
+				ECC5BE512FEEC1E300285F85 /* SwiftyRSA in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		0154FC2C2CE3CB0B001267AA /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				0154FC312CE3CB0B001267AA /* FrameWork_V2.framework */,
-				0154FC332CE3CB0B001267AA /* FrameWork-V2Tests.xctest */,
-			);
-			name = Products;
-			sourceTree = "<group>";
-		};
 		F50DEFD92907DDDA00CBA008 /* BottomPopupController */ = {
 			isa = PBXGroup;
 			children = (
@@ -394,6 +368,7 @@
 		F518090928ACB3B400D4219C /* EPG */ = {
 			isa = PBXGroup;
 			children = (
+				ECD659DA2FF27F7300A572A2 /* FrameworkInitializer.swift */,
 				F518091428ACB3F200D4219C /* EPG.swift */,
 				F518090A28ACB3B400D4219C /* EPG.h */,
 				F55D64C42923991C004149D0 /* Media.xcassets */,
@@ -408,8 +383,11 @@
 		F518091128ACB3C000D4219C /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				0154FC2B2CE3CB0B001267AA /* EMVco.xcodeproj */,
 				F518091228ACB3C000D4219C /* UIKit.framework */,
+				ECC5BE0F2FEEC0C300285F85 /* InitializeActivity.swift */,
+				ECC5BE192FEEC0C300285F85 /* Interface */,
+				ECC5BE232FEEC0C300285F85 /* Models */,
+				ECC5BE2D2FEEC0C300285F85 /* Utilities  */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -442,6 +420,8 @@
 		F518092A28ACC7AF00D4219C /* Custom Classes */ = {
 			isa = PBXGroup;
 			children = (
+				EC8959C32FF66FC7000D6BCF /* FloatingLabelField.swift */,
+				ECD659BE2FF24C5C00A572A2 /* EPGLogger.swift */,
 				F518093728ACF76400D4219C /* Card Scanner */,
 				F518093128ACC80800D4219C /* TextFieldFormatter.swift */,
 				F518093328ACC83600D4219C /* CardValidator.swift */,
@@ -464,6 +444,7 @@
 		F52E947E291A7DF300F80DC4 /* View */ = {
 			isa = PBXGroup;
 			children = (
+				EC8959792FF4E45B000D6BCF /* NewAddCardVC.swift */,
 				F55B12FB29068780001966D9 /* AddCardVC.xib */,
 				F55B12FC29068780001966D9 /* AddCardVC.swift */,
 				F52E947C291A7D8800F80DC4 /* AddCardVC+Extension.swift */,
@@ -706,11 +687,15 @@
 				F518090328ACB3B400D4219C /* Sources */,
 				F518090428ACB3B400D4219C /* Frameworks */,
 				F518090528ACB3B400D4219C /* Resources */,
-				0154FB8F2CE3C964001267AA /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				ECC5BE192FEEC0C300285F85 /* Interface */,
+				ECC5BE232FEEC0C300285F85 /* Models */,
+				ECC5BE2D2FEEC0C300285F85 /* Utilities  */,
 			);
 			name = EPG;
 			productName = EPG;
@@ -741,37 +726,17 @@
 				Base,
 			);
 			mainGroup = F51808FD28ACB3B400D4219C;
+			packageReferences = (
+				ECC5BE4F2FEEC1E300285F85 /* XCRemoteSwiftPackageReference "SwiftyRSA" */,
+			);
 			productRefGroup = F518090828ACB3B400D4219C /* Products */;
 			projectDirPath = "";
-			projectReferences = (
-				{
-					ProductGroup = 0154FC2C2CE3CB0B001267AA /* Products */;
-					ProjectRef = 0154FC2B2CE3CB0B001267AA /* EMVco.xcodeproj */;
-				},
-			);
 			projectRoot = "";
 			targets = (
 				F518090628ACB3B400D4219C /* EPG */,
 			);
 		};
 /* End PBXProject section */
-
-/* Begin PBXReferenceProxy section */
-		0154FC312CE3CB0B001267AA /* FrameWork_V2.framework */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.framework;
-			path = FrameWork_V2.framework;
-			remoteRef = 0154FC302CE3CB0B001267AA /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		0154FC332CE3CB0B001267AA /* FrameWork-V2Tests.xctest */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.cfbundle;
-			path = "FrameWork-V2Tests.xctest";
-			remoteRef = 0154FC322CE3CB0B001267AA /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-/* End PBXReferenceProxy section */
 
 /* Begin PBXResourcesBuildPhase section */
 		F518090528ACB3B400D4219C /* Resources */ = {
@@ -800,11 +765,13 @@
 				F5F5049529B6083800D79980 /* PKPaymentMethodType+Extension.swift in Sources */,
 				F55B12E929068661001966D9 /* IQUIView+IQKeyboardToolbar.swift in Sources */,
 				F55B12EA29068661001966D9 /* IQInvocation.swift in Sources */,
+				EC8959C42FF66FC7000D6BCF /* FloatingLabelField.swift in Sources */,
 				F52E947D291A7D8800F80DC4 /* AddCardVC+Extension.swift in Sources */,
 				F55B12F129068661001966D9 /* IQKeyboardManager+Debug.swift in Sources */,
 				F55B12F529068661001966D9 /* IQUIViewController+Additions.swift in Sources */,
 				F50DF03C2907DEB200CBA008 /* ActivityIndicator.swift in Sources */,
 				F50DF0352907DEB200CBA008 /* Request.swift in Sources */,
+				ECD659DB2FF27F7300A572A2 /* FrameworkInitializer.swift in Sources */,
 				F50DF01B2907DEB200CBA008 /* URLSessionConfiguration+Alamofire.swift in Sources */,
 				F50DEFE72907DDDA00CBA008 /* BottomPopupPresentAnimator.swift in Sources */,
 				F50DF0312907DEB200CBA008 /* AuthenticationInterceptor.swift in Sources */,
@@ -846,6 +813,7 @@
 				F50DF0292907DEB200CBA008 /* AlamofireExtended.swift in Sources */,
 				F50DEFE32907DDDA00CBA008 /* BottomPopupViewController.swift in Sources */,
 				F50DF11F290802F900CBA008 /* Array+Extension.swift in Sources */,
+				ECD659BF2FF24C5F00A572A2 /* EPGLogger.swift in Sources */,
 				F52E948E291A836400F80DC4 /* PaymentMethod.swift in Sources */,
 				F55B12E329068661001966D9 /* IQTextView.swift in Sources */,
 				F55B12FE29068780001966D9 /* AddCardVC.swift in Sources */,
@@ -857,6 +825,7 @@
 				F50DF0342907DEB200CBA008 /* Result+Alamofire.swift in Sources */,
 				F50DF0262907DEB200CBA008 /* AFError.swift in Sources */,
 				F50DF01D2907DEB200CBA008 /* OperationQueue+Alamofire.swift in Sources */,
+				EC89597A2FF4E45B000D6BCF /* NewAddCardVC.swift in Sources */,
 				F55B12F729068661001966D9 /* IQUIView+Hierarchy.swift in Sources */,
 				F5F8DEC128FD78CE00569961 /* UIColor+Extension.swift in Sources */,
 				F50DF0322907DEB200CBA008 /* Response.swift in Sources */,
@@ -886,6 +855,7 @@
 				F52E9482291A7E2D00F80DC4 /* PaymentDetailViewModel.swift in Sources */,
 				F50DF0172907DEB200CBA008 /* MultipartFormData.swift in Sources */,
 				F50DF0162907DEB200CBA008 /* APIModels.swift in Sources */,
+				ECC5BE452FEEC0C300285F85 /* InitializeActivity.swift in Sources */,
 				F50DF0392907DEB200CBA008 /* ResponseSerialization.swift in Sources */,
 				F50DF0152907DEB200CBA008 /* APIConstant.swift in Sources */,
 				F55B12F329068661001966D9 /* IQKeyboardManager+Toolbar.swift in Sources */,
@@ -1125,6 +1095,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		ECC5BE4F2FEEC1E300285F85 /* XCRemoteSwiftPackageReference "SwiftyRSA" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/TakeScoop/SwiftyRSA";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.8.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		ECC5BE502FEEC1E300285F85 /* SwiftyRSA */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = ECC5BE4F2FEEC1E300285F85 /* XCRemoteSwiftPackageReference "SwiftyRSA" */;
+			productName = SwiftyRSA;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = F51808FE28ACB3B400D4219C /* Project object */;
 }

@@ -64,7 +64,9 @@ internal class LocalizationSystem: NSObject {
         case "enter_cvv_number":
             return self.isArabicActive ? "أدخل رقم CVC" : "Enter CVC Number"
         case "confirm_continue":
-            return self.isArabicActive ? "التأكيد والمتابعة" : "Confirm & Continue"
+            return self.isArabicActive ? "ادفع الآن" : "Pay Now"
+        case "card_payment":
+            return self.isArabicActive ? "الدفع بالبطاقة" : "Card Payment"
         case "check_internet_connection":
             return self.isArabicActive ? "الرجاء التحقق من اتصال الانترنت الخاص بك!" : "Please check your internet connection!"
         case "authentication_failed":

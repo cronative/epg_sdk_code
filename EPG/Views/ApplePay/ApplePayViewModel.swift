@@ -32,11 +32,25 @@ extension ApplePayViewModel {
     private func createWalletSessionParams() -> [String: Any] {
         var paramObject: [String: Any] = [:]
         paramObject["TransactionID"] = EPGPayment.shared.transactionId ?? ""
-        paramObject["SessionID"] = EPGPayment.shared.authenticationToken ?? ""
         paramObject["Customer"] = EPGPayment.shared.customerName ?? ""
+        // SessionID and AuthenticationToken are two distinct fields — mirrors Android's
+        // WalletCreateSession(transactionID, customer, sessionID, authenticationToken, userName, password).
+        paramObject["SessionID"] = EPGPayment.shared.walletSessionID ?? ""
+        paramObject["AuthenticationToken"] = EPGPayment.shared.authenticationToken ?? ""
         paramObject["UserName"] = EPGPayment.shared.merchantUserName ?? ""
-        
+        if let password = EPGPayment.shared.password, !password.isEmpty {
+            paramObject["Password"] = password
+        }
+
         let params: [String: Any] = ["WalletCreateSession": paramObject]
+
+        EPGLogger.recurrence("===== WalletCreateSession REQUEST =====")
+        EPGLogger.recurrence("  Body: \(paramObject)")
+        if let jsonData = try? JSONSerialization.data(withJSONObject: params, options: .prettyPrinted),
+           let jsonString = String(data: jsonData, encoding: .utf8) {
+            EPGLogger.recurrence("  JSON Body:\n\(jsonString)")
+        }
+
         return params
     }
     private func walletPaymentData() -> [String: Any]? {
@@ -47,6 +61,16 @@ extension ApplePayViewModel {
         let type = token.paymentMethod.type
         let network = token.paymentMethod.network
         let displayName = token.paymentMethod.displayName
+        
+        print("PaymentData Size:", token.paymentData.count)
+
+        if let jsonString = String(data: token.paymentData, encoding: .utf8) {
+            print("Apple Pay JSON:")
+            print(jsonString)
+        } else {
+            print("Unable to convert paymentData to String")
+        }
+        
         let applePayResponse = EPGHelper.getObject(paymentData: token.paymentData) ?? [:]
         
         var paymentMethod: [String: Any] = [:]
@@ -68,15 +92,22 @@ extension ApplePayViewModel {
         
         var paramObject: [String: Any] = [:]
         paramObject["TransactionID"] = EPGPayment.shared.transactionId ?? ""
-        paramObject["SessionID"] = EPGPayment.shared.authenticationToken ?? ""
+        // SessionID and AuthenticationToken are two distinct fields, same as WalletCreateSession.
+        paramObject["SessionID"] = EPGPayment.shared.walletSessionID ?? ""
+        paramObject["AuthenticationToken"] = EPGPayment.shared.authenticationToken ?? ""
         paramObject["Customer"] = EPGPayment.shared.customerName ?? ""
         paramObject["UserName"] = EPGPayment.shared.merchantUserName ?? ""
         paramObject["WalletResponseJSON"] = paymentJSONString
         
         let params: [String: Any] = ["WalletSubmitPayload": paramObject]
-        if EPGPayment.shared.isPrintMsgEnabled {
-            print("Wallet Payment Payload Params: \(EPGHelper.getJSONString(object: params) ?? "")")
+
+        EPGLogger.recurrence("===== WalletSubmitPayload REQUEST =====")
+        EPGLogger.recurrence("  Body: \(paramObject)")
+        if let jsonData = try? JSONSerialization.data(withJSONObject: params, options: .prettyPrinted),
+           let jsonString = String(data: jsonData, encoding: .utf8) {
+            EPGLogger.recurrence("  JSON Body:\n\(jsonString)")
         }
+
         return params
     }
     
@@ -85,6 +116,16 @@ extension ApplePayViewModel {
         RestAPI.shared.createWalletSession(params: self.createWalletSessionParams()) { response in
             DispatchQueue.main.async {
                 ActivityIndicator.hideActivity()
+
+                // Store SessionID from WalletCreateSession response —
+                // this will be passed in WalletSubmitPayload.
+                if let sessionID = response?.transaction?.SessionID, !sessionID.isEmpty {
+                    EPGLogger.recurrence("WalletCreateSession — SessionID received: \(sessionID)")
+                    EPGPayment.shared.walletSessionID = sessionID
+                } else {
+                    EPGLogger.warning("WalletCreateSession — SessionID NOT found in response, ResponseCode: \(response?.transaction?.ResponseCode ?? "nil")")
+                }
+
                 self.sessionResponse = response
             }
         }

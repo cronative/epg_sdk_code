@@ -78,10 +78,38 @@ extension AddCardViewModel {
     }
     
     func getPreAuthenticationData(cardParams: [String: Any], completion: @escaping(_ response: PreAuthenticateResponse?) -> ()) {
+        let fullParams = ["PreAuthenticateInApp": getPreAuthenticateParams(cardInfo: cardParams)]
+
+        // ============================================================
+        // 🔍 [EPG-DEBUG] PreAuthenticate REQUEST
+        // ============================================================
+        EPGLogger.debug("\n🔍 [EPG-DEBUG] ===== PreAuthenticate REQUEST =====")
+        EPGLogger.debug("   ➤ Params: \(fullParams)")
+        EPGLogger.debug("🔍 [EPG-DEBUG] =====================================\n")
+        // ============================================================
+
         ActivityIndicator.showActivity()
-        RestAPI.shared.preAuthenticate(params: ["PreAuthenticateInApp": getPreAuthenticateParams(cardInfo: cardParams)]) { response in
+        RestAPI.shared.preAuthenticate(params: fullParams) { response in
             DispatchQueue.main.async {
                 ActivityIndicator.hideActivity()
+
+                // ============================================================
+                // 🔍 [EPG-DEBUG] PreAuthenticate RESPONSE
+                // ============================================================
+                EPGLogger.debug("\n🔍 [EPG-DEBUG] ===== PreAuthenticate RESPONSE =====")
+                if let response = response {
+                    EPGLogger.debug("   ➤ ResponseCode: \(response.PreAuthenticateInApp?.ResponseCode ?? "nil")")
+                    EPGLogger.debug("   ➤ ResponseDescription: \(response.PreAuthenticateInApp?.ResponseDescription ?? "nil")")
+                    EPGLogger.debug("   ➤ ChallengeRequired: \(response.PreAuthenticateInApp?.ChallengeRequired ?? "nil")")
+                    EPGLogger.debug("   ➤ RedirectionURL: \(response.PreAuthenticateInApp?.RedirectionURL ?? "nil")")
+                    EPGLogger.debug("   ➤ transaction.ResponseCode: \(response.transaction?.ResponseCode ?? "nil")")
+                    EPGLogger.debug("   ➤ transaction.ResponseDescription: \(response.transaction?.ResponseDescription ?? "nil")")
+                } else {
+                    EPGLogger.debug("   ❌ Response is nil")
+                }
+                EPGLogger.debug("🔍 [EPG-DEBUG] ======================================\n")
+                // ============================================================
+
                 completion(response)
             }
         }
@@ -99,33 +127,121 @@ extension AddCardViewModel {
 //           return params
 //       }
     func getValidateCardParams(cardNumber: String) -> [String: Any] {
-        print("cardNumber:", cardNumber)
-           print("customerName:", EPGPayment.shared.customerName ?? "nil")
-           print("authenticationToken:", EPGPayment.shared.authenticationToken ?? "nil")
-           print("transactionId:", EPGPayment.shared.transactionId ?? "nil")
+        EPGLogger.debug("cardNumber: \(cardNumber)")
+        EPGLogger.debug("customerName: \(EPGPayment.shared.customerName ?? "nil")")
+        EPGLogger.debug("authenticationToken: \(EPGPayment.shared.authenticationToken ?? "nil")")
+        EPGLogger.debug("transactionId: \(EPGPayment.shared.transactionId ?? "nil")")
+        EPGLogger.debug("password set: \(EPGPayment.shared.password != nil)")
   
         var params: [String: Any] = [:]
         
-        params["GetEmvco3DS2AcsDetail"] = [
-            "Customer": EPGPayment.shared.customerName ?? "DefaultCustomer",
-            "Password":"Comtrust@20182018",
+        var requestBody: [String: Any] = [
+            "Customer": EPGPayment.shared.customerName ?? "",
             "Store": "MobileSDK",
             "Terminal": "MobileSDK",
             "AuthenticationToken": EPGPayment.shared.authenticationToken ?? "",
             "TransactionID": EPGPayment.shared.transactionId ?? "",
             "CardNumber": cardNumber.replacingOccurrences(of: " ", with: ""),
-            "UserName":EPGPayment.shared.merchantUserName ?? ""
+            "UserName": EPGPayment.shared.merchantUserName ?? ""
         ]
+
+        // Password is merchant-supplied via EPGPaymentRequest — never hardcoded.
+        if let password = EPGPayment.shared.password, !password.isEmpty {
+            requestBody["Password"] = password
+        }
+
+        params["GetEmvco3DS2AcsDetail"] = requestBody
         
         return params
     }
     
 
 
+    // MARK: - Recurrence PreAuth
+    // Mirror of Android: viewModel.preAuthCall(isRecurrencePayment: true)
+    // In recurrence mode CardNumber & ExpiryMonth/Year are NOT sent — only CVV (VerifyCode).
+    // The server already knows the saved card from CardMask / TransactionID.
+    // isSubsequentRecurrenceCode = true is sent ONLY for this recurrence PreAuth call.
+    func getPreAuthenticateParamsRecurrence(cvv: String) -> [String: Any] {
+        var params: [String: Any] = [:]
+        params["VerifyCode"]                  = cvv
+        params["UserName"]                    = EPGPayment.shared.merchantUserName
+        params["Customer"]                    = EPGPayment.shared.customerName
+        params["Instrument"]                  = "C"
+        params["TransactionID"]               = EPGPayment.shared.transactionId
+        params["AuthenticationToken"]         = EPGPayment.shared.authenticationToken
+        params["Client"]                      = RestAPI.shared.getAgentParams()
+        // Sent only in the recurrence flow — flags this PreAuth call as a
+        // subsequent (saved-card) recurrence transaction, not a fresh card entry.
+        params["IsSubsequentRecurrence"]  = true
+        // CardNumber, ExpiryMonth, ExpiryYear intentionally omitted for recurrence
+        return params
+    }
+
+    func getPreAuthenticationDataRecurrence(cvv: String, completion: @escaping(_ response: PreAuthenticateResponse?) -> ()) {
+        let bodyParams = getPreAuthenticateParamsRecurrence(cvv: cvv)
+        let fullParams = ["PreAuthenticateInApp": bodyParams]
+
+        EPGLogger.recurrence("===== Recurrence PreAuthenticate REQUEST =====")
+        EPGLogger.recurrence("  Body: \(bodyParams)")
+        EPGLogger.recurrence("  Full Params: \(fullParams)")
+        if let isSubsequent = bodyParams["IsSubsequentRecurrence"] {
+            EPGLogger.recurrence("  IsSubsequentRecurrence: \(isSubsequent)")
+        }
+
+        // Pretty-print the exact JSON body being sent, for full visibility.
+        if let jsonData = try? JSONSerialization.data(withJSONObject: fullParams, options: .prettyPrinted),
+           let jsonString = String(data: jsonData, encoding: .utf8) {
+            EPGLogger.recurrence("  JSON Body:\n\(jsonString)")
+        }
+
+        ActivityIndicator.showActivity()
+        RestAPI.shared.preAuthenticate(params: fullParams) { response in
+            DispatchQueue.main.async {
+                ActivityIndicator.hideActivity()
+
+                EPGLogger.recurrence("===== Recurrence PreAuthenticate RESPONSE =====")
+                if let response = response {
+                    EPGLogger.recurrence("  ResponseCode: \(response.PreAuthenticateInApp?.ResponseCode ?? "nil")")
+                    EPGLogger.recurrence("  ChallengeRequired: \(response.PreAuthenticateInApp?.ChallengeRequired ?? "nil")")
+                } else {
+                    EPGLogger.warning("  Response is nil")
+                }
+
+                completion(response)
+            }
+        }
+    }
+
        func validateCardData(cardNumber: String, completion: @escaping (_ response: EmvCo3DS2AcsDetailResponse?) -> ()) {
+           let params = getValidateCardParams(cardNumber: cardNumber)
+
+           // ============================================================
+           // 🔍 [EPG-DEBUG] ValidateCard REQUEST
+           // ============================================================
+           EPGLogger.debug("\n🔍 [EPG-DEBUG] ===== ValidateCard REQUEST =====")
+           EPGLogger.debug("   ➤ Params: \(params)")
+           EPGLogger.debug("🔍 [EPG-DEBUG] =================================\n")
+           // ============================================================
+
            ActivityIndicator.showActivity()
-           RestAPI.shared.validateCard(params:  getValidateCardParams(cardNumber: cardNumber)) { response in
-               print("CardDataREsponse>>>>>>>>>>>>",response)
+           RestAPI.shared.validateCard(params: params) { response in
+               // ============================================================
+               // 🔍 [EPG-DEBUG] ValidateCard RESPONSE
+               // ============================================================
+               EPGLogger.debug("\n🔍 [EPG-DEBUG] ===== ValidateCard RESPONSE =====")
+               if let response = response {
+                   EPGLogger.debug("   ➤ ResponseCode: \(response.transaction?.responseCode ?? "nil")")
+                   EPGLogger.debug("   ➤ ResponseDescription: \(response.transaction?.responseDescription ?? "nil")")
+                   EPGLogger.debug("   ➤ isSDKEnabled: \(String(describing: response.transaction?.isSDKEnabled))")
+                   EPGLogger.debug("   ➤ acsThreeDSVersion: \(response.transaction?.acsThreeDSVersion ?? "nil")")
+               } else {
+                   EPGLogger.debug("   ❌ Response is nil")
+               }
+               EPGLogger.debug("🔍 [EPG-DEBUG] ==================================\n")
+               // ============================================================
+
+               EPGLogger.debug("CardDataREsponse>>>>>>>>>>>> \(String(describing: response))")
                DispatchQueue.main.async {
                    ActivityIndicator.hideActivity()
                    completion(response)
@@ -134,6 +250,3 @@ extension AddCardViewModel {
        }
 
 }
-
-
-   

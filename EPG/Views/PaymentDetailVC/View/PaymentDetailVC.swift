@@ -157,19 +157,39 @@ class PaymentDetailVC: UIViewController {
         } else if selectedPaymentMethod.Symbol == "MobPay" { //Mobile Payment
             
         } else if selectedPaymentMethod.Symbol == "C" {
-            var height = UIScreen.main.bounds.height * 0.7
-            if height < 400 {
-                height = UIScreen.main.bounds.height * 0.9
-            } else if height < 680 {
-                height = 680.0
-            }
+            var height = UIScreen.main.bounds.height * 0.85
+//            if height < 400 {
+//                height = UIScreen.main.bounds.height * 0.9
+//            } else if height < 680 {
+//                height = 680.0
+//            }
             
-            let vc = AddCardVC(nibName: "AddCardVC", bundle: EPGHelper.bundle!)
-            vc.view.frame.size.width = UIScreen.main.bounds.width
-            vc.view.frame.size.height = height
-            vc.superController = self
-            vc.paymentMethod = selectedPaymentMethod
-            vc.delegate = self
+            let paymentData  = self.paymentDetailViewModel.paymentResponse?.PaymentDataInApp
+            let isRecurrence = paymentData?.isRecurrenceTransaction == true
+
+            let vc = NewAddCardVC()
+            vc.configureForRecurrence(isRecurrencePayment: isRecurrence, paymentDataResponse: paymentData)
+            vc.superController  = self
+            vc.paymentMethod    = selectedPaymentMethod
+            vc.delegate         = self
+            vc.modalPresentationStyle = .overFullScreen
+
+            // Pass amount and smiles info to footer
+            vc.totalAmount = paymentData?.Transaction?.Amount?.Printable ?? EPGPayment.shared.amountToPayText ?? ""
+            vc.smilesInfo  = paymentData?.Transaction?.OrderInfo ?? ""
+
+            EPGLogger.recurrence("PaymentDetailVC → NewAddCardVC")
+            EPGLogger.recurrence("  isRecurrence: \(isRecurrence)")
+            EPGLogger.recurrence("  CardMask: \(String(describing: paymentData?.Transaction?.CardMask))")
+            EPGLogger.recurrence("  Amount: \(vc.totalAmount)")
+
+            // Smiles Points logs
+            EPGLogger.debug("Smiles OrderInfo raw from server: '\(paymentData?.Transaction?.OrderInfo ?? "nil")'")
+            EPGLogger.debug("Smiles smilesInfo being passed to VC: '\(vc.smilesInfo)'")
+            if vc.smilesInfo.isEmpty {
+                EPGLogger.debug("Smiles smilesInfo is EMPTY — check if server is sending Order.Info in PaymentDataInApp.Transaction")
+            }
+
             self.present(vc, animated: true, completion: nil)
         } else {
             if EPGPayment.shared.isPrintMsgEnabled {

@@ -91,10 +91,14 @@ class EPGHelper {
     
     class func getObject(paymentData: Data) -> [String: Any]? {
         do {
-            let jsonObject = try JSONSerialization.jsonObject(with: paymentData, options: []) as? [String: Any]
-            return jsonObject
-        }
-        catch {
+            let object = try JSONSerialization.jsonObject(with: paymentData)
+
+            print("Parsed object:", object)
+
+            return object as? [String: Any]
+
+        } catch {
+            print("JSON Error:", error)
             return nil
         }
     }

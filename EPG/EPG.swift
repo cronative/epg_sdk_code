@@ -7,7 +7,7 @@
 
 import Foundation
 import UIKit
-import FrameWork_V2
+
 public protocol EPGDelegate: AnyObject {
     func epgPayment(delegate result: EPGResult?)
 }
@@ -32,6 +32,7 @@ public class EPGPayment: NSObject {
     internal var merchantUserName: String?
     internal var transactionId: String?
     internal var authenticationToken: String?
+    internal var password: String?
     internal var merchantIdentifier: String?
     internal var customerName: String?
     internal var callBackURL: String?
@@ -45,6 +46,14 @@ public class EPGPayment: NSObject {
     internal var currency: String = "AED"
     internal var amount: String = "0.0"
     internal var epgApplePayRequest: EPGPaymentApplePayRequest?
+    /// Populated from GetEmvco3DS2AcsDetail response — used by EMVco's createTransaction(),
+    /// never hardcoded in UI code.
+    internal var directoryServerID: String?
+    internal var acsThreeDSVersion: String?
+    /// Wallet-specific SessionID for Apple Pay's WalletCreateSession — kept separate
+    /// from authenticationToken, mirroring Android's WalletCreateSession which sends
+    /// SessionID and AuthenticationToken as two distinct fields.
+    internal var walletSessionID: String?
     
     public var epgRequest: EPGPaymentRequest?
     
@@ -99,6 +108,9 @@ extension EPGPayment {
             return EPGConstant.shared.validate_trans_id
         }
         guard let sessionId = self.epgApplePayRequest?.sessionId, sessionId.removingWhitespaces().count > 0 else {
+            return EPGConstant.shared.validate_session_id
+        }
+        guard let authToken = self.epgApplePayRequest?.authenticationToken, authToken.removingWhitespaces().count > 0 else {
             return EPGConstant.shared.validate_auth_token
         }
         guard let customerName = self.epgApplePayRequest?.customerName, customerName.removingWhitespaces().count > 0 else {
@@ -125,29 +137,59 @@ extension EPGPayment {
             EPGPayment.shared.transactionId         = request.transactionId
             EPGPayment.shared.authenticationToken   = request.authenticationToken
             EPGPayment.shared.customerName          = request.customerName
+            EPGPayment.shared.password              = request.password
+            EPGPayment.shared.directoryServerID     = request.directoryServerID
             EPGPayment.shared.callBackURL           = request.callBackURL
             EPGPayment.shared.amountToPayText       = request.amountToPayText ?? "Amount to Pay"
             EPGPayment.shared.showVat               = request.showVat
             EPGPayment.shared.addressIP             = Internet.shared.getIPAddress()
             EPGPayment.shared.theme                 = request.theme
             APIConstant.shared.baseURL              = request.baseURL
+
+            // ============================================================
+            // 🔍 [EPG-DEBUG] mapAllData — request values
+            // ============================================================
+            print("🔍 [EPG-DEBUG] ===== mapAllData =====")
+            print("   ➤ merchantUserName   : \(request.merchantUserName)")
+            print("   ➤ transactionId      : \(request.transactionId)")
+            print("   ➤ customerName       : \(request.customerName)")
+            print("   ➤ directoryServerID  : \(request.directoryServerID ?? "nil")")
+            print("   ➤ baseURL            : \(request.baseURL)")
+            print("   ➤ callBackURL        : \(request.callBackURL)")
+            print("🔍 [EPG-DEBUG] ============================")
+            // ============================================================
+
         } else if let request = self.epgApplePayRequest {
             EPGPayment.shared.epgApplePayRequest    = request
             EPGPayment.shared.delegate              = request.delegate
             EPGPayment.shared.merchantUserName      = request.merchantUserName
             EPGPayment.shared.merchantIdentifier    = request.merchantIdentifier
-            EPGPayment.shared.authenticationToken    = request.sessionId
+            // SessionID and AuthenticationToken are two distinct fields in the
+            // WalletCreateSession request — never collapse them into one.
+            EPGPayment.shared.walletSessionID       = request.sessionId
+            EPGPayment.shared.authenticationToken   = request.authenticationToken
             EPGPayment.shared.transactionId         = request.transactionId
             EPGPayment.shared.customerName          = request.customerName
+            EPGPayment.shared.password              = request.password
             EPGPayment.shared.addressIP             = Internet.shared.getIPAddress()
             EPGPayment.shared.amount                = "\(request.amount)"
             APIConstant.shared.baseURL              = request.baseURL
+
+            EPGLogger.debug("===== mapAllData (Apple Pay) =====")
+            EPGLogger.debug("  merchantUserName   : \(request.merchantUserName)")
+            EPGLogger.debug("  transactionId      : \(request.transactionId)")
+            EPGLogger.debug("  walletSessionID    : \(request.sessionId)")
+            EPGLogger.debug("  authenticationToken: \(request.authenticationToken)")
         }
     }
     
     private func startPayment() {
         self.mapAllData()
+
+        print("🔍 [EPG-DEBUG] startPayment called — pushing PaymentDetailVC")
+
         guard let bundle = EPGHelper.bundle else {
+            print("❌ [EPG-DEBUG] EPGHelper.bundle is nil — cannot push PaymentDetailVC")
             return
         }
         let vc = PaymentDetailVC(nibName: "PaymentDetailVC", bundle: bundle)
